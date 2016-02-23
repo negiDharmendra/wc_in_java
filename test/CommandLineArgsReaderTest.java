@@ -82,4 +82,36 @@ public class CommandLineArgsReaderTest {
         String [] methods = {"lineCount","wordCount","byteCount"};
         assertArrayEquals(methods,commandLineArgs.getMethodName());
     }
+    @Test
+    public void getFilesShouldGiveTheAllTheProvidedFileName(){
+        String [] args = {"-l","sample.txt"};
+        CommandLineArgsReader commandLineArgs = new CommandLineArgsReader(args);
+        String [] filesName = {"sample.txt"};
+        assertArrayEquals(filesName,commandLineArgs.getFiles());
+    }
+    @Test
+    public void getFilesShouldTreatAllThoseArgsStartWithoutHyphonAsFileName(){
+        String [] args = {"-sample1.txt","w","l","sample.txt"};
+        CommandLineArgsReader commandLineArgs = new CommandLineArgsReader(args);
+        String [] filesName = {"w","l","sample.txt"};
+        assertArrayEquals(filesName,commandLineArgs.getFiles());
+    }
+    @Test
+    public void getFilesShouldTreatTheSingleHyphonAsFileName(){
+        String [] args = {"-","-"};
+        CommandLineArgsReader commandLineArgs = new CommandLineArgsReader(args);
+        String [] filesName = {"-","-"};
+        assertArrayEquals(filesName,commandLineArgs.getFiles());
+    }
+    @Test
+    public void getFilesShouldThrowAnErrorInTheAbsenceOfFiles(){
+        String [] args = {"-l"};
+        CommandLineArgsReader commandLineArgs = new CommandLineArgsReader(args);
+        String errorMessage = "\n\t File name is not provided";
+        try {
+            commandLineArgs.getMethodName();
+        } catch (IllegalArgumentException err) {
+            assertEquals(err.getMessage(), errorMessage);
+        }
+    }
 }

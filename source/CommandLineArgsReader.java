@@ -53,4 +53,16 @@ public class CommandLineArgsReader {
         String [] methodNames = convertOptionIntoMethodName(options);
     	return methodNames;
     }
+    public String [] getFiles(){
+       int index = 0;
+        String files = "";
+        while(args.length>index&&args[index].charAt(0)=='-'&&args[index].length()>1)
+            index++;
+        while(index<args.length){
+            files += args[index]+"\n";
+            index++;
+        }
+        if(files.length()<1) new UnsupportedOperationException("\n\t File name is not provided");
+        return files.split("\\n");
+    }
 }
