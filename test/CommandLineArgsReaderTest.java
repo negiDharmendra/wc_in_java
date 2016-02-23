@@ -4,6 +4,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import source.CommandLineArgsReader;
 
 
@@ -14,6 +16,20 @@ public class CommandLineArgsReaderTest {
     	CommandLineArgsReader commandLineArgs = new CommandLineArgsReader(args);
     	String [] methods = {"lineCount"};
     	assertArrayEquals(methods,commandLineArgs.getMethodName());
+    }
+    @Test
+    public void getMethodNameShouldGiveEmptyArrayForNoOption(){
+        String [] args = {};
+        CommandLineArgsReader commandLineArgs = new CommandLineArgsReader(args);
+        String [] methods = {};
+        assertArrayEquals(methods,commandLineArgs.getMethodName());
+    }
+    @Test
+    public void getMethodNameShouldGiveEmptyArrayWhenThereIsNoOptionBeginsWithHyphen(){
+        String [] args = {"l","w","m","sample.txt"};
+        CommandLineArgsReader commandLineArgs = new CommandLineArgsReader(args);
+        String [] methods = {};
+        assertArrayEquals(methods,commandLineArgs.getMethodName());
     }
     @Test
     public void getMethodNameShouldGiveAllTheMethodNamesAccordingToProvidedOptions(){
@@ -51,5 +67,19 @@ public class CommandLineArgsReaderTest {
         } catch (IllegalArgumentException err) {
             assertEquals(err.getMessage(), errorMessage);
         }
+    }
+    @Test
+    public void getMethodNameShouldReturnsEmptyArrayInTheAbsenceOfOptions(){
+        String [] args = {"sample.txt"};
+        CommandLineArgsReader commandLineArgs = new CommandLineArgsReader(args);
+        String [] methods = {};
+        assertArrayEquals(methods,commandLineArgs.getMethodName());
+    }
+    @Test
+    public void getMethodNameShouldGiveAllMethodNameEvenIfAllOptionsAreTogetherInAString(){
+        String [] args = {"-lwc"};
+        CommandLineArgsReader commandLineArgs = new CommandLineArgsReader(args);
+        String [] methods = {"lineCount","wordCount","byteCount"};
+        assertArrayEquals(methods,commandLineArgs.getMethodName());
     }
 }
