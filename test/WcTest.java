@@ -42,6 +42,16 @@ public class WcTest {
 		assertEquals(string.wordCount(),0);
 	}
 	@Test
+	public void wordCountShouldCountShouldAvoidTheMultipleSpacesBetweenWords (){
+		Wc string = new Wc("word       count");
+		assertEquals(string.wordCount(),2);
+	}
+	@Test
+	public void wordCountShouldCountTheNumberOfWordAsZeroIfThereIsOnlyWhiteSpaces (){
+		Wc string = new Wc("   ");
+		assertEquals(string.wordCount(),0);
+	}
+	@Test
 	public void lineCountShouldCountNumberOfStringSeparatedByNewLineCharacter(){
 		Wc string = new Wc("Hello\nThis\nA\ntest\nFor line Count");
 		assertEquals(string.lineCount(),4);

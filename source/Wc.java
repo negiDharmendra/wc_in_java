@@ -11,7 +11,8 @@ public class Wc {
     	return chars.length;
     }
     public int wordCount(){
-    	String [] words = content.split("\\s");
+        String contentWithOutMultipleSpaces = content.replaceAll("\\s+", " ");
+    	String [] words = contentWithOutMultipleSpaces.split("\\s");
     	return words.length;
     }
     public int lineCount(){

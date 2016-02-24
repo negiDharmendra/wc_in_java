@@ -12,7 +12,7 @@ public class FileOperation {
 		this.files = files;
 	}
 	public String readNext() throws FileNotFoundException,IOException{
-		if(files.length==0)return null;
+		if(files.length==index)return null;
 		String fileName = files[index];
 		index++;
 		File file = new File(fileName);
