@@ -1,57 +1,52 @@
-package source;
-
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
-
-import source.CommandLineArgsReader;
-import source.FileOperation;
-import source.Wc;
+import java.util.HashMap;
 
 public class WcMain {
-    public static void main(String[] args)  throws FileNotFoundException,IOException{
-    	CommandLineArgsReader argsReader = new CommandLineArgsReader(args);
-    	String [] methods =  argsReader.getMethodName();
-        String [] files = argsReader.getFiles();
-    	FileOperation filesReader = new FileOperation(files);
-    	String fileContent = "";
-        int [] total = new int [methods.length]; 
-    	for(String file: files){
-    		fileContent = filesReader.readNext();
-    		if(fileContent==null) break;
-            String []result = methodCaller(methods,fileContent,file);
-            for (int i=0;i<result.length-1 ;i++ )
-                total[i]+=Integer.parseInt(result[i]);
-            printResult(result);
+    public static void main(String[] args) {
+        CommandLineArgsReader argsReader = new CommandLineArgsReader(args);
+        String options = argsReader.getOptions();
+        options = options.length()>0?options:"lwc";
+        String[] files = argsReader.getFiles();
+        FileOperation filesReader = new FileOperation(files);
+        fileReader(filesReader, options,files);
+    }
+
+    public static void fileReader(FileOperation fileReader, String options,String[] files) {
+        String [] result = new String[files.length+1];
+        int [] total = new int[options.length()];
+        for (int i =0;i<files.length;i++)
+            try {
+                Wc wc = new Wc(fileReader.readNext());
+                provideScanner(options, wc);
+                wc.count();
+                result[i] = wc.summery();
+                accumulator(result[i],total);
+                result[i] = result[i]+"\t"+files[i];
+            } catch (IOException e) {
+                result[i] =e.getMessage();
+            }
+        result[files.length] = new PrepareResult("\t").add(total);
+        printResult(result);
+    }
+
+    private static void printResult(String[] result) {
+        System.out.println(new PrepareResult("\n").add(result));
+    }
+
+    private static void accumulator(String s, int[] total) {
+        String [] counts = s.split("\t");
+        for (int i = 0; i <counts.length ; i++)
+            total[i] += Integer.parseInt(counts[i]);
+
+    }
+
+    private static void provideScanner(String options, Wc wc) {
+        HashMap scanners = new AllScanner().get();
+        for (int i = 0; i < options.length(); i++){
+            Scanner scanner = (Scanner) scanners.get(String.valueOf(options.charAt(i)));
+            wc.addScanner(scanner);
         }
-        printResult(total);
     }
-    private static String [] methodCaller(String [] methods,String fileContent,String fileName){
-		Wc wc = new Wc(fileContent);
-        String [] result = new String[methods.length+1];
-		for (int index=0;index<methods.length; index++) {
-			if(methods[index].equals("lineCount"))
-				result[index]=wc.lineCount()+"";
-			if(methods[index].equals("charCount"))
-				result[index]=wc.charCount()+"";
-			if(methods[index].equals("wordCount"))
-				result[index]=wc.wordCount()+"";
-			if(methods[index].equals("byteCount"))
-				result[index]=wc.byteCount()+"";
-		}
-        result[methods.length] = fileName;
-        return result;
-    }
-    private static void printResult(String [] values){
-        String result = "";
-        for (String value: values )
-            result+="\t"+value;
-        System.out.println(result);
-    }
-    private static void printResult(int [] values){
-        String result = "";
-        for (int value: values )
-            result+="\t"+value;
-        System.out.println(result);
-    }
+
+
 }

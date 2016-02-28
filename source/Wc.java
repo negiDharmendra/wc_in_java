@@ -1,29 +1,43 @@
-package source;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Wc {
-	private String content;
-    public Wc (String content){
-    	this.content = content;
+    private String content;
+    private List<Scanner> scanners;
+    String contentWithOutMultipleSpaces;
+
+    public Wc(String content) {
+        this.content = content;
+        contentWithOutMultipleSpaces = content.replaceAll("\\s+"," ");
+        scanners = new ArrayList<Scanner>();
     }
-    public int charCount(){
-    	char [] chars = new char[content.length()];
-    	content.getChars(0,content.length(),chars,0);
-    	return chars.length;
+
+    public void addScanner(Scanner scanner) {
+        scanners.add(scanner);
     }
-    public int wordCount(){
-        String contentWithOutMultipleSpaces = content.replaceAll("\\s+", " ");
-    	String [] words = contentWithOutMultipleSpaces.split("\\s");
-    	return words.length;
+
+
+    private void count(char character) {
+        for (Scanner scanner : scanners)
+            if(!(scanner instanceof WordScanner))
+                scanner.scan(character);
     }
-    public int lineCount(){
-    	byte [] byteCodes = content.getBytes();
-    	int numberOfLines = 0;
-    	for (byte byteCode: byteCodes)
-    		if(byteCode==10) numberOfLines++;//10 is byte code of new line char
-    	return numberOfLines;
+    private void countWord(char character) {
+        for (Scanner scanner : scanners)
+            if(scanner instanceof WordScanner)
+                scanner.scan(character);
     }
-    public int byteCount(){
-    	byte [] byteCodes = content.getBytes();
-    	return byteCodes.length;
+
+    public void count() {
+        for (int i = 0; i < content.length(); i++)
+            count(content.charAt(i));
+        for (int i = 0; i < contentWithOutMultipleSpaces.length(); i++)
+            if(!(contentWithOutMultipleSpaces.matches(" ")&&contentWithOutMultipleSpaces.length()==1))
+                countWord(contentWithOutMultipleSpaces.charAt(i));
+    }
+
+    public String summery() {
+        PrepareResult prepareResult = new PrepareResult("\t");
+        return prepareResult.add(scanners);
     }
 }

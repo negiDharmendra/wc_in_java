@@ -1,5 +1,3 @@
-package source;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,50 +6,39 @@ public class CommandLineArgsReader {
     public CommandLineArgsReader(String [] args){
     	this.args = args;
     }
-    private String [] getOption (){
-        int index = 0,newIndex = 0;
-        String [] options = new String [args.length];
+    private String  getOption (){
+        int index = 0;
+        String result="";
         while(args.length>index&&args[index].charAt(0)=='-'&&args[index].length()>1){
-            options[index]=args[index];
+            result +=args[index].substring(1);
             index++;
         }
-        String [] result = new String [index];
-        for (String option : options)
-            if(option!=null){
-                result[newIndex] = option.substring(1);
-                newIndex++;
-            }
         return result;
     }
-    private String [] convertOptionIntoMethodName(String [] options){
+    private String convertOptionIntoMethodName(String options){
         String methodNames = "";
-        String allOptions = Arrays.toString(options);
-        if(allOptions.indexOf("l")>=0)
-            methodNames+="lineCount\n";
-        if(allOptions.indexOf("w")>=0)
-            methodNames+="wordCount\n";
-        if(allOptions.lastIndexOf("c")>allOptions.lastIndexOf("m"))
-            methodNames+="byteCount\n";
-        if(allOptions.lastIndexOf("c")<allOptions.lastIndexOf("m"))
-            methodNames+="charCount\n";
-        return methodNames.split("\\n");
+        String [] optionSequence = {"l","w","c","m"};
+        for (String option:optionSequence)
+            if(options.contains(option))
+                methodNames+=option;
+        if(options.lastIndexOf("c")>options.lastIndexOf("m"))
+            methodNames = methodNames.replaceAll("m","");
+        if(options.lastIndexOf("c")<options.lastIndexOf("m"))
+            methodNames = methodNames.replaceAll("c","");
+        return methodNames;
     }
-    private void filterInvalidOptions(String [] options){
+    private void filterInvalidOptions(String options){
         String pattern = "[^lwcm]";
-        String optionString ="";
-        for (int i=0; i<options.length; i++)
-            optionString += options[i];
         Pattern regex = Pattern.compile(pattern);
-        Matcher matcher = regex.matcher(optionString);
+        Matcher matcher = regex.matcher(options);
         if(matcher.find())
             throw new IllegalArgumentException("\n\twc: illegal option -- "+matcher.group(0)+"\n\tusage: wc [-clmw] [file ...]");
     }
-    public String [] getMethodName(){
-        String [] options = getOption();
-        if(options.length==0)return options;
+    public String getOptions(){
+        String options = getOption();
+        if(options.length()==0)return options;
         filterInvalidOptions(options);
-        String [] methodNames = convertOptionIntoMethodName(options);
-    	return methodNames;
+    	return convertOptionIntoMethodName(options);
     }
     public String [] getFiles(){
        int index = 0;
@@ -62,7 +49,7 @@ public class CommandLineArgsReader {
             files += args[index]+"\n";
             index++;
         }
-        if(files.length()<1) new UnsupportedOperationException("\n\t File name is not provided");
+        if(files.length()<1) throw new UnsupportedOperationException("\n\t File name is not provided");
         return files.split("\\n");
     }
 }

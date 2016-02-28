@@ -1,7 +1,5 @@
-package source;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
@@ -11,7 +9,7 @@ public class FileOperation {
 	public FileOperation (String [] files){
 		this.files = files;
 	}
-	public String readNext() throws FileNotFoundException,IOException{
+	public String readNext() throws IOException{
 		if(files.length==index)return null;
 		String fileName = files[index];
 		index++;
